@@ -35,3 +35,4 @@ class Expense {
     );
   }
 }
+//Model for expenses

@@ -11,3 +11,4 @@ class Category {
     );
   }
 }
+//Model for categories

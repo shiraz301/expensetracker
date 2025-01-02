@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
 import '../models/expense.dart';
-import '../utils/shared_preferences_helper.dart'; // Import SharedPreferences helper
+import '../utils/shared_preferences_helper.dart';
 
-class ExpenseDetailsScreen extends StatelessWidget {
-  final Expense expense; // Declare the 'expense' parameter
+class ExpenseDetailsScreen extends StatefulWidget {
+  final Expense expense;
 
   // Constructor to receive the 'expense' data
-  ExpenseDetailsScreen({required this.expense}); // Correctly define the constructor
+  ExpenseDetailsScreen({required this.expense});
+
+  @override
+  _ExpenseDetailsScreenState createState() => _ExpenseDetailsScreenState();
+}
+
+class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
+  late Expense expense; // Declare a local variable to hold the current expense
+
+  @override
+  void initState() {
+    super.initState();
+    expense = widget.expense; // Initialize with the passed expense data
+  }
 
   Future<void> _deleteExpense(BuildContext context) async {
-    // Call the delete method from SharedPreferencesHelper
     await SharedPreferencesHelper.deleteExpense(expense.title);
-    Navigator.pop(context); // Return to the previous screen after deletion
+    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Expense deleted successfully!')),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +73,17 @@ class ExpenseDetailsScreen extends StatelessWidget {
                       'Description: ${expense.description}',
                       style: TextStyle(fontSize: 16),
                     ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Category: ${expense.category}', // Added category
+                      style: TextStyle(fontSize: 16),
+                    ),
                     SizedBox(height: 16),
                     // Action buttons for editing and deleting
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        // Delete Button
                         IconButton(
                           icon: Icon(Icons.delete),
                           color: Colors.red,

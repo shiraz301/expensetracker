@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';  // Import Syncfusion Charts
+import 'package:syncfusion_flutter_charts/charts.dart';
 import '../models/expense.dart';
 import '../utils/shared_preferences_helper.dart';
 
@@ -29,7 +29,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
     setState(() {
       expenses = loadedExpenses;
-      totalAmount = total;  // Update total amount
+      totalAmount = total;
     });
   }
 

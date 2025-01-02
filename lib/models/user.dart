@@ -1,13 +1,13 @@
 class User {
-  String username;
+  String email;
   String password;
 
-  User({required this.username, required this.password});
+  User({required this.email, required this.password});
 
   // Convert User object to map
   Map<String, dynamic> toMap() {
     return {
-      'username': username,
+      'email': email,
       'password': password,
     };
   }
@@ -15,8 +15,9 @@ class User {
   // Convert map to User object
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      username: map['username'],
+      email: map['email'],
       password: map['password'],
     );
   }
 }
+// Model for Users

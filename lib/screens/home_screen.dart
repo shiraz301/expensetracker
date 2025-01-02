@@ -43,13 +43,19 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text(expense.title, style: TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text('Amount: \$${expense.amount}\nDate: ${expense.date}'),
               isThreeLine: true,
-              onTap: () {
-                // Navigate to expense details if needed
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ExpenseDetailsScreen(expense: expense),
-                    ));
+              onTap: () async {
+                // Navigate to expense details screen
+                final updatedExpense = await Navigator.push<Expense>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExpenseDetailsScreen(expense: expense),
+                  ),
+                );
+
+                // If the expense was updated, reload the expenses list
+                if (updatedExpense != null) {
+                  _loadExpenses(); // Refresh the expenses list
+                }
               },
             ),
           );
@@ -73,13 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            // Adjust Drawer Header with matching design
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor, // Use app's primary color
+                color: Theme.of(context).primaryColor,
               ),
               child: Align(
-                alignment: Alignment.centerLeft, // Align the text to the left
+                alignment: Alignment.centerLeft,
                 child: Text(
                   'Menu',
                   style: TextStyle(
@@ -114,4 +119,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

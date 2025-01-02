@@ -9,9 +9,21 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>(); // For form validation
+  final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  // Function to validate email
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$').hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
 
   // Function to validate password
   String? _validatePassword(String? value) {
@@ -27,15 +39,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   // Function to handle registration logic
   void _register() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final username = _usernameController.text;
+      final email = _emailController.text;
       final password = _passwordController.text;
+      final confirmPassword = _confirmPasswordController.text;
 
-      User user = User(username: username, password: password);
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Passwords do not match')),
+        );
+        return;
+      }
+
+      User user = User(email: email, password: password);
       await SharedPreferencesHelper.saveUser(user);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration successful!')),
+      );
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fix the errors in the form')),
       );
     }
   }
@@ -51,20 +79,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Username Field
+              // Email Field
               TextFormField(
-                controller: _usernameController,
+                controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Email',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Username is required';
-                  }
-                  return null;
-                },
+                validator: _validateEmail,
               ),
               SizedBox(height: 16),
 
@@ -74,6 +97,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                validator: _validatePassword,
+              ),
+              SizedBox(height: 16),
+
+              // Confirm Password Field
+              TextFormField(
+                controller: _confirmPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),

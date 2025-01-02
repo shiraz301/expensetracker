@@ -4,34 +4,35 @@ import 'dart:convert';
 import '../models/expense.dart';
 
 class SharedPreferencesHelper {
-  static const _userKey = 'user';
+  static const _emailKey = 'email';
   static const _passwordKey = 'password';
   static const String _expensesKey = 'expenses';
 
-  // Save user data permanently
+  // Save user data permanently (email and password)
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString(_userKey, user.username);
+    prefs.setString(_emailKey, user.email);
     prefs.setString(_passwordKey, user.password);
   }
 
-  // Get user data
+  // Get user data (email and password)
   static Future<User?> getUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final username = prefs.getString(_userKey);
+    final email = prefs.getString(_emailKey);
     final password = prefs.getString(_passwordKey);
-    if (username != null && password != null) {
-      return User(username: username, password: password);
+    if (email != null && password != null) {
+      return User(email: email, password: password);
     }
-    return null; // Return null if no user data is stored
+    return null;
   }
 
   // Clear user data (delete user from SharedPreferences)
   static Future<void> clearUser() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove(_userKey);
+    prefs.remove(_emailKey);
     prefs.remove(_passwordKey);
   }
+
 
   // Save expenses to SharedPreferences
   static Future<void> saveExpenses(List<Expense> expenses) async {
@@ -62,6 +63,5 @@ class SharedPreferencesHelper {
 
     await saveExpenses(updatedExpenses);
   }
-
 }
 

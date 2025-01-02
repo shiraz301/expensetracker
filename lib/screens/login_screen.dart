@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../utils/shared_preferences_helper.dart';
-import '../models/user.dart';
 import 'home_screen.dart';
 import 'registration_screen.dart';
 
@@ -10,9 +9,21 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>(); // For form validation
+  final _formKey = GlobalKey<FormState>();
+
+  // Function to validate the email
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  }
 
   // Function to validate the password
   String? _validatePassword(String? value) {
@@ -28,16 +39,18 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
       final user = await SharedPreferencesHelper.getUser();
-      final username = _usernameController.text;
+      final email = _emailController.text;
       final password = _passwordController.text;
 
-      if (user != null && user.username == username && user.password == password) {
+      if (user != null && user.email == email && user.password == password) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Username or Password')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid Email or Password')),
+        );
       }
     }
   }
@@ -60,24 +73,19 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Username Field
+              // Email Field with validation
               TextFormField(
-                controller: _usernameController,
+                controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Email',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Username is required';
-                  }
-                  return null;
-                },
+                validator: _validateEmail, // Validate email format
               ),
               SizedBox(height: 16),
 
-              // Password Field
+              // Password Field with validation
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
@@ -86,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                validator: _validatePassword,
+                validator: _validatePassword, // Validate password length
               ),
               SizedBox(height: 20),
 

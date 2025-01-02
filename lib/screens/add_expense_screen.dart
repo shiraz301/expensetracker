@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For formatting the date
-import 'package:expensetracker/models/expense.dart';
-import 'package:expensetracker/utils/shared_preferences_helper.dart';
-import 'package:expensetracker/utils/category_service.dart'; // Import category service
+import 'package:intl/intl.dart';
+import '../models/expense.dart';
+import '../utils/shared_preferences_helper.dart';
+import '../utils/category_service.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   @override
@@ -25,15 +25,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     _loadCategories();  // Fetch categories when screen is initialized
   }
 
-  // Fetch categories from the backend
+  // Fetching categories from the backend
   Future<void> _loadCategories() async {
     try {
       List<String> fetchedCategories = await CategoryService.getCategories();
       setState(() {
         categories = fetchedCategories;
       });
+      print('Categories loaded: $categories'); // Debug log
     } catch (e) {
-      // Handle error here, you can show an error message if categories fail to load
       print('Failed to load categories: $e');
     }
   }
@@ -52,7 +52,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       });
   }
 
-  // Add Expense
+  // Adding Expense
   void _addExpense() async {
     final title = _titleController.text;
     final amount = double.tryParse(_amountController.text);
@@ -201,6 +201,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   // Method to show category dialog
   void _showCategoryDialog() async {
+    // Check if categories are loaded
+    print('Categories in dialog: $categories');
     await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -208,7 +210,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           title: Text('Select Category'),
           content: SingleChildScrollView(
             child: Column(
-              children: categories.map<Widget>((category) {
+              children: categories.isEmpty
+                  ? [Text('No categories available')] // Handle case when no categories are available
+                  : categories.map<Widget>((category) {
                 return ListTile(
                   title: Text(category),
                   onTap: () {
@@ -225,4 +229,5 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       },
     );
   }
+
 }
